@@ -1,10 +1,10 @@
-# Medcijn Scanner
+# Medicijn Scanner
 
 This project features a medicine scanner using machine learning. It is able to detect what kind of medicine you are holding using the device's camera.
 
 ## Demo
 
-[Demo](#)
+[Demo](https://medicijn-scanner.herokuapp.com/)
 
 ## Table of Contents
 
