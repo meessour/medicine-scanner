@@ -2,12 +2,13 @@
   "name": "meesterproef-1920",
   "version": "1.0.0",
   "description": "This project features a medicine scanner using machine learning. It is able to detect what kind of medicine you are holding using the device's camera.",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,10 @@
   },
   "homepage": "https://github.com/meessour/meesterproef-1920#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "ejs": "^3.1.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-sslify": "^1.2.0",
+    "socket.io": "^2.3.0"
   }
 }

@@ -79,5 +79,10 @@ De opdrachtgever wilt een web app die bedoeld is voor medicijngebruikers, dat is
 **Week 4:** Testen en verbeteren/perfectioneren.    
 **Week 5:** Puntjes op de i zetten, bugs fixen en afronden. 
 
+### Use Case
+
+Here are a few use cases of a medicine user using the app:
+![Use cases](docs/img/readme/use_cases.png)
+
 ## Licence
 MIT © [Mees Sour](https://github.com/meessour)
