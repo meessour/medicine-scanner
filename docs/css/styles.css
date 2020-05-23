@@ -10,6 +10,11 @@
 * {
     font-family: 'Comfortaa', cursive;
     font-size: 16px;
+    font-weight: 600;
+}
+
+b {
+    font-weight: 700;
 }
 
 html,
@@ -32,17 +37,29 @@ body {
     display: none !important;
 }
 
+/* Scrollbar width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    background: var(--greenYellow);
+}
+
+
 #camera-container {
-    width: 100%;
+    width: 503px;
+    max-width: 90%;
 }
 
 
 #user-camera {
+    width: 95%;
+
     border: 4px solid var(--greenYellow);
     object-fit: cover;
     background-color: black;
-    width: 480px;
-    max-width: 90%;
 }
 
 .showCameraCanvas {
@@ -56,7 +73,7 @@ body {
     max-height: 360px;
     min-height: 360px;
     padding: 8px;
-    margin: 8px;
+    margin: 8px 0;
     border-bottom-width: 4px;
     border-top-width: 4px;
 }
@@ -72,7 +89,7 @@ body {
     max-height: 0;
     min-height: 0;
     padding: 0 8px;
-    margin: 0 8px;
+    margin: 0;
     border-bottom-width: 0 !important;
     border-top-width: 0 !important;
 }
@@ -81,22 +98,24 @@ body {
     margin: 0 auto;
     height: fit-content;
 
-    width: 503px;
-    max-width: 90%;
-
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     place-content: space-between
+}
+
+hr.rounded {
+    border-top: 2px solid var(--greenYellow);
+    border-radius: 5px;
+    margin: 16px 0;
 }
 
 #switch-wrapper {
     display: flex;
     align-content: start;
     align-items: center;
-    margin-bottom: 12px;
 }
 
-.button {
+input, button {
     height: 34px;
     width: fit-content;
 
@@ -109,8 +128,70 @@ body {
     margin-bottom: 12px;
 }
 
-.button:hover {
+#search-button {
+    padding: 0;
+
+    min-height: 34px;
+    min-width: 34px;
+
+    height: 34px;
+    width: 34px;
+
+    margin: 0 0 1.5px -6px;
+
+    vertical-align: middle;
+
+    border-left: 1px solid black;
+}
+
+.result-container {
+    width: 100%;
+    height: fit-content;
+    max-height: 500px;
+
+    overflow-y: auto;
+}
+
+.result-container > :not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.medicine-item {
+    background-color: var(--greenYellow);
+
+    height: fit-content;
+
+    text-align: start;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+
+    margin: 0 8px 0 0;
+}
+
+.medicine-registration-number, .medicine-active-ingredient {
+    margin: 0 0 0 8px;
+
+    align-self: center;
+}
+
+.medicine-name {
+    margin: 0 0 8px 0;
+}
+
+.medicine-registration-number-container, .medicine-active-ingredient-container {
+    display: flex;
+    flex-direction: row;
+}
+
+button:hover {
     cursor: pointer;
+}
+
+.search-icon {
+    vertical-align: middle;
 }
 
 /* Switch styling -start */
@@ -138,6 +219,13 @@ body {
     background-color: grey;
     -webkit-transition: .4s;
     transition: .4s;
+}
+
+.extra-options-container {
+    display: flex;
+    justify-content: space-between;
+
+    white-space: nowrap;
 }
 
 .slider:before {
