@@ -61,17 +61,73 @@ let mediaStream;
 
 function enableCamera() {
     navigator.mediaDevices.getUserMedia(userMediaDevices).then((stream) => {
-        mediaStream = stream
-        console.log("Camera permission was granted")
+            console.log("Camera permission was granted")
 
-        videoCanvas.srcObject = stream
+            mediaStream = stream
+            videoCanvas.srcObject = stream
+            videoCanvas.play();
 
-        showHideCameraButton();
-    }).catch(function (error) {
+            showHideCameraButton();
+
+            takeSnapshots(stream)
+        }
+    ).catch(function (error) {
         console.log("Camera permission was rejected or is not available")
     })
 
     printCameraDevices()
+}
+
+function takeSnapshots() {
+    // interval in millisecconds
+    const intervalPerScreenshot = 1000
+
+    let interval = window.setInterval(function () {
+        if (mediaStream && mediaStream.active) {
+            getScreenshot().then(blob => {
+                uploadScreenshot(blob)
+            }).catch(error => {
+                console.log("something went wrong", error)
+            })
+        } else {
+            console.log("Interval removed")
+            clearInterval(interval);
+        }
+
+    }, intervalPerScreenshot);
+}
+
+/**
+ * Takes a screenshot from the mediastream.
+ * @returns {Blob} Blob from screenshot
+ */
+function getScreenshot() {
+    // Get a single frame from the mediastream
+    const test = mediaStream.getVideoTracks()[0]
+
+    // Make an imagecapture object in order to get the blob data
+    const imageCapture = new ImageCapture(test);
+
+    // Returns a promise that resolves with blob data from the captured image
+    return imageCapture.takePhoto().then(blob => {
+        if (!blob) throw "No blob file was created"
+
+        const blobSizeMb = (Math.round((blob.size / 1000000) * 10) / 10)
+        console.log("Blob size in MB:", blobSizeMb)
+
+        // return blob
+        return blob
+    })
+}
+
+function uploadScreenshot(blob) {
+    if (!blob) throw "blob is undefined"
+
+    socket.emit('upload', blob, (response) => {
+        if (response) {
+            console.log("response true!")
+        }
+    });
 }
 
 function disableCamera() {

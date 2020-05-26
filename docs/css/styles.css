@@ -104,7 +104,7 @@ body {
 }
 
 hr.rounded {
-    border-top: 2px solid var(--greenYellow);
+    border-top: 1px solid var(--greenYellow);
     border-radius: 5px;
     margin: 16px 0;
 }
