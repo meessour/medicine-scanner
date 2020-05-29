@@ -80,7 +80,7 @@ function enableCamera() {
 
 function takeSnapshots() {
     // interval in millisecconds
-    const intervalPerScreenshot = 1000
+    const intervalPerScreenshot = 2000
 
     let interval = window.setInterval(function () {
         if (mediaStream && mediaStream.active) {
@@ -129,6 +129,36 @@ function uploadScreenshot(blob) {
         }
     });
 }
+
+socket.on('search-result', function (result) {
+    console.log("search result", result);
+
+    if (!result) return;
+
+    const registrationNumber = result.registrationNumber
+    const name = result.name
+    const activeIngredient = result.activeIngredient
+
+    const html = ` 
+<div class="medicine-item">
+    <div class="medicine-name-container">
+        <img alt="Medicine name" src="/img/icons/title-24px.svg">
+        <p class="medicine-name">${name}</p>
+    </div>
+    
+    <div class="medicine-registration-number-container">
+        <img alt="Registration number" src="/img/icons/assignment-24px.svg">
+        <p class="medicine-registration-number">${registrationNumber}</p>
+    </div>
+    
+    <div class="medicine-active-ingredient-container">
+        <img alt="Active ingrediënt" src="/img/icons/scatter_plot-24px.svg">
+        <p class="medicine-active-ingredient">${activeIngredient}</p>
+    </div>
+</div>
+`
+    document.getElementById("scan-result-container").innerHTML = html
+});
 
 function disableCamera() {
     mediaStream.getTracks().forEach(function (track) {

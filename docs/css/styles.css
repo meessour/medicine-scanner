@@ -106,7 +106,7 @@ body {
 hr.rounded {
     border-top: 1px solid var(--greenYellow);
     border-radius: 5px;
-    margin: 16px 0;
+    margin-bottom: 16px;
 }
 
 #switch-wrapper {
@@ -171,19 +171,21 @@ input, button {
     margin: 0 8px 0 0;
 }
 
-.medicine-registration-number, .medicine-active-ingredient {
+.medicine-name, .medicine-registration-number, .medicine-active-ingredient {
     margin: 0 0 0 8px;
 
     align-self: center;
 }
 
-.medicine-name {
-    margin: 0 0 8px 0;
+#scan-result-container{
+    margin: 16px 0;
 }
 
-.medicine-registration-number-container, .medicine-active-ingredient-container {
+.medicine-name-container, .medicine-registration-number-container, .medicine-active-ingredient-container {
     display: flex;
     flex-direction: row;
+
+    margin: 2px 0;
 }
 
 button:hover {
