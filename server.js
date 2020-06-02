@@ -15,7 +15,7 @@ const medicineObjectPath = './docs/resources/medicineObject.json';
 const medicineArray = require(medicineArrayPath);
 let medicineObject;
 
-try{
+try {
     medicineObject = require(medicineObjectPath);
 } catch (e) {
 
@@ -90,7 +90,7 @@ function parseMedicineData() {
 
     console.log("medicineArray length", medicineArray.length)
     console.log("newMedicineObject length", Object.keys(newMedicineObject).length)
-    console.log("medicineObject length", medicineObject ? Object.keys(medicineObject).length :undefined)
+    console.log("medicineObject length", medicineObject ? Object.keys(medicineObject).length : undefined)
     console.log(_.isEqual(newMedicineObject, medicineObject))
 
     // If the original file's data changed compared to the new one, rewrite.
@@ -154,7 +154,7 @@ socketIo.on('connection', (socket) => {
                 const stream = fs.createWriteStream(imageName)
 
                 // Only
-                if (socket?.streamState?.closed === false) return
+                if (socket && socket.streamState && socket.streamState.closed === false) return
 
                 socket.streamState = stream
 
@@ -189,7 +189,7 @@ socketIo.on('connection', (socket) => {
                 // (RVG\d+)|(RVH\d+)|(EU(\d+|\/)+)\d+
 
 
-                 stream.on("ready", function (fd) {
+                stream.on("ready", function (fd) {
                     tesseractScanner(imageName).then(function (result) {
 
                         // console.log("result ###\n" + result + "\n$$$")
@@ -201,7 +201,7 @@ socketIo.on('connection', (socket) => {
 
                         const medicineInformation = getMedicineInformation(registrationNumber)
 
-                        if (registrationNumber && medicineInformation){
+                        if (registrationNumber && medicineInformation) {
                             console.log("medicine found!", medicineInformation)
 
                             // Send the medicine information back to the client
@@ -268,7 +268,7 @@ socketIo.on('connection', (socket) => {
 });
 
 function getRegistrationNumber(string) {
-    string = string?.trim().replace(/ /g,'')
+    string = string ? string.trim().replace(/ /g, '') : string
     // RegEx for getting registration numbers starting with either "RVG", "RVH" or "EU/" and ending with a number
     const rx = /(RVG|RVH|EU\/)\d+(\d+|\/|\=)+/
     const arr = rx.exec(string);
@@ -280,5 +280,5 @@ function getMedicineInformation(registrationNumber) {
 }
 
 function getReadableRegistrationNumber(registrationNumber) {
-    return registrationNumber.replace(/RVG/g,'RVG ').replace(/RVH/g,'RVH ')
+    return registrationNumber.replace(/RVG/g, 'RVG ').replace(/RVH/g, 'RVH ')
 }
