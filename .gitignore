@@ -2,3 +2,6 @@
 /package-lock.json
 .idea/
 .env
+build/config.gypi
+
+docs/resources/medicineObject.json
