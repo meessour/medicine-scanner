@@ -80,21 +80,40 @@ function enableCamera() {
 
 function takeSnapshots() {
     // interval in millisecconds
-    const intervalPerScreenshot = 2000
+    const intervalPerScreenshot = 2000;
 
-    let interval = window.setInterval(function () {
+    (function captureScreen() {
+        console.log("go!")
         if (mediaStream && mediaStream.active) {
             getScreenshot().then(blob => {
                 uploadScreenshot(blob)
             }).catch(error => {
                 console.log("something went wrong", error)
+            }).finally(() => {
+                setTimeout(captureScreen, intervalPerScreenshot);
             })
         } else {
             console.log("Interval removed")
-            clearInterval(interval);
+            // clearInterval(interval);
         }
+    })();
 
-    }, intervalPerScreenshot);
+    // let interval = setInterval(function captureScreen() {
+    //     console.log("go!")
+    //     if (mediaStream && mediaStream.active) {
+    //         getScreenshot().then(blob => {
+    //             uploadScreenshot(blob)
+    //         }).catch(error => {
+    //             console.log("something went wrong", error)
+    //         }).finally(() => {
+    //
+    //         })
+    //     } else {
+    //         console.log("Interval removed")
+    //         clearInterval(interval);
+    //     }
+    //
+    // }, intervalPerScreenshot);
 }
 
 /**
