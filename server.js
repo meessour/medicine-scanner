@@ -21,7 +21,7 @@ try {
 
 }
 
-parseMedicineData();
+// parseMedicineData();
 
 /**
  * Data retrieved from source are objects in a long array.
