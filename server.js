@@ -125,7 +125,7 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 http.listen(port, () => {
     console.log("Server is listening on port", port);
