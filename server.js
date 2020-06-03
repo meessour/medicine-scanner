@@ -154,7 +154,7 @@ socketIo.on('connection', (socket) => {
                 const stream = fs.createWriteStream(imageName)
 
                 // Only
-                if (socket && socket.streamState && socket.streamState.closed === false) return
+                if (socket?.streamState?.closed === false) return
 
                 socket.streamState = stream
 
@@ -213,16 +213,29 @@ socketIo.on('connection', (socket) => {
                         }
 
                     }).finally(function () {
-                        // Delete all the files in the snapshots directory
-                        fs.readdir(directory, (err, files) => {
-                            if (err) throw err;
 
-                            for (const file of files) {
-                                fs.unlink(path.join(directory, file), err => {
-                                    if (err) throw err;
-                                });
-                            }
-                        });
+                        try {
+                            fs.unlink(imageName, err => {
+                                if (err) throw err;
+                            });
+                        } catch (e) {
+                            console.log("couldnt delete/find png")
+                        }
+
+                        // Delete all the files in the snapshots directory
+                        // fs.readdir(directory, (err, files) => {
+                        //     if (err) throw err;
+                        //
+                        //     fs.unlink(imageName, err => {
+                        //         if (err) throw err;
+                        //     });
+                        //
+                        //     // for (const file of files) {
+                        //     //     fs.unlink(path.join(directory, imageName), err => {
+                        //     //         if (err) throw err;
+                        //     //     });
+                        //     // }
+                        // });
                         stream.end()
                     })
 
