@@ -2,6 +2,7 @@
     --maximumPurple: #822E81;
     --roseDust: #AA6373;
     --greenYellow: #F0F2A6;
+    --disabledColor: #ADAC9A;
     --russianViolet: #392061;
     --raisinBlack: #1A1B25;
     --grey: hsl(235, 18%, 25%);
@@ -128,6 +129,10 @@ input, button {
     margin-bottom: 12px;
 }
 
+button:disabled {
+    background: var(--disabledColor);
+}
+
 #search-button {
     padding: 0;
 
@@ -177,7 +182,7 @@ input, button {
     align-self: center;
 }
 
-#scan-result-container{
+#scan-result-container {
     margin: 16px 0;
 }
 
@@ -188,7 +193,7 @@ input, button {
     margin: 2px 0;
 }
 
-button:hover {
+button:hover:enabled {
     cursor: pointer;
 }
 

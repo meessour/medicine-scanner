@@ -1,12 +1,49 @@
 const videoCanvas = document.getElementById('user-camera');
+
 const enableCameraButton = document.getElementById("enable-camera-button");
 const disableCameraButton = document.getElementById("disable-camera-button");
 
 // Initiate socket for user
 let socket = io();
 
+let isCameraEnabled = false
+
 // All types of media devices the app needs permission of
 const userMediaDevices = {video: true};
+
+const worker = Tesseract.createWorker({
+    // logger: m => console.log(m)
+});
+
+// Initizalize worker
+(async () => {
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+
+    removeDisabledCameraButton();
+})();
+
+// Process the image
+async function getTextFromImage(image) {
+    if (!isCameraEnabled) return;
+
+    const {data: {text}} = await worker.recognize(image);
+    console.log(text);
+    return text
+}
+
+function removeDisabledCameraButton() {
+    enableCameraButton.disabled = false;
+}
+
+function getRegistrationNumberFromText(text) {
+    text = text ? text.trim().replace(/ /g, '') : text
+    // RegEx for getting registration numbers starting with either "RVG", "RVH" or "EU/" and ending with a number
+    const rx = /(RVG|RVH|EU\/)\d+(\d+|\/|\=)+/
+    const arr = rx.exec(text);
+    return arr ? arr[0] : undefined;
+}
 
 // Check if the user can use mediaDevices
 if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
@@ -73,23 +110,46 @@ function enableCamera() {
         }
     ).catch(function (error) {
         console.log("Camera permission was rejected or is not available")
+    }).finally(function () {
+        isCameraEnabled = true
     })
 
     printCameraDevices()
 }
 
+function disableCamera() {
+    mediaStream.getTracks().forEach(function (track) {
+        console.log("disable stream")
+
+        track.stop();
+        videoCanvas.srcObject = undefined
+        isCameraEnabled = false
+    });
+}
+
 function takeSnapshots() {
-    // interval in millisecconds
+    // interval in millisecconds per screencapture
     const intervalPerScreenshot = 2000;
 
     (function captureScreen() {
         console.log("go!")
         if (mediaStream && mediaStream.active) {
-            getScreenshot().then(blob => {
-                uploadScreenshot(blob)
-            }).catch(error => {
-                console.log("something went wrong", error)
-            }).finally(() => {
+            getBlobScreenshot().then(blob => {
+                const image = getImageFromBlob(blob)
+                return getTextFromImage(image)
+            })
+                .then(text => {
+                    return getRegistrationNumberFromText(text)
+                }).then(registrationNumber => {
+                if (registrationNumber && registrationNumber.length > 0) {
+                    return fetchRegistrationNumber(registrationNumber)
+                } else {
+                    return;
+                }
+            })
+                .catch(error => {
+                    console.log("something went wrong", error)
+                }).finally(() => {
                 setTimeout(captureScreen, intervalPerScreenshot);
             })
         } else {
@@ -101,7 +161,7 @@ function takeSnapshots() {
     // let interval = setInterval(function captureScreen() {
     //     console.log("go!")
     //     if (mediaStream && mediaStream.active) {
-    //         getScreenshot().then(blob => {
+    //         getBlobScreenshot().then(blob => {
     //             uploadScreenshot(blob)
     //         }).catch(error => {
     //             console.log("something went wrong", error)
@@ -116,11 +176,19 @@ function takeSnapshots() {
     // }, intervalPerScreenshot);
 }
 
+function getImageFromBlob(blob) {
+    const url = URL.createObjectURL(blob);
+    const image = new Image();
+    image.src = url;
+
+    return image
+}
+
 /**
  * Takes a screenshot from the mediastream.
  * @returns {Blob} Blob from screenshot
  */
-function getScreenshot() {
+function getBlobScreenshot() {
     // Get a single frame from the mediastream
     const test = mediaStream.getVideoTracks()[0]
 
@@ -146,6 +214,17 @@ function uploadScreenshot(blob) {
         if (response) {
             console.log("response true!")
         }
+    });
+}
+
+function fetchRegistrationNumber(registrationNumber) {
+    if (!registrationNumber) throw "blob is undefined"
+
+    return socket.emit('get-medicine', registrationNumber, (response) => {
+        if (response) {
+            console.log("response true!")
+        }
+        return true;
     });
 }
 
@@ -179,14 +258,6 @@ socket.on('search-result', function (result) {
     document.getElementById("scan-result-container").innerHTML = html
 });
 
-function disableCamera() {
-    mediaStream.getTracks().forEach(function (track) {
-        console.log("disable stream")
-
-        track.stop();
-        videoCanvas.srcObject = undefined
-    });
-}
 
 function showCameraCanvas() {
     videoCanvas.classList.remove("hideCameraCanvas")

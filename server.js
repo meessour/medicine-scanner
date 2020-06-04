@@ -246,34 +246,23 @@ socketIo.on('connection', (socket) => {
         }
     });
 
-    app.post('/upload', (req, res) => {
-        const image = req.file;
+    socket.on('get-medicine', function (registrationNumber, response) {
+        if (!registrationNumber) return;
 
-        console.log("image", image);
+        const medicineInformation = getMedicineInformation(registrationNumber)
 
-        if (!image) throw "no image was uploaded";
+        if (registrationNumber && medicineInformation) {
+            console.log("medicine found!", medicineInformation)
 
-        upload(req, res, err => {
-            if (err) {
-                console.log(err);
-                return res.send('Something went wrong');
-            }
-
-            const image = fs.readFileSync(
-                __dirname + '/resources/snapshots/' + req.file.originalname,
-                {encoding: null}
-            );
-
-            tesseract.recognize(image)
-                .progress(function (p) {
-                    console.log('progress', p);
-                })
-                .then(function (result) {
-                    console.log('done', result);
-                    res.send(result.html);
-                });
-        });
+            // Send the medicine information back to the client
+            socket.emit('search-result', {
+                registrationNumber: getReadableRegistrationNumber(registrationNumber),
+                name: medicineInformation.name,
+                activeIngredient: medicineInformation.activeIngredient,
+            });
+        }
     });
+
 
     socket.on('disconnecting', function () {
         console.log("A client disconnected", socket.id)
