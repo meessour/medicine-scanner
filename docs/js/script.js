@@ -2,14 +2,19 @@ const videoCanvas = document.getElementById('user-camera');
 
 const enableCameraButton = document.getElementById("enable-camera-button");
 const disableCameraButton = document.getElementById("disable-camera-button");
+const scanResultContainer = document.getElementById("scan-result-container");
+const switchCameraButton = document.getElementById("switch-camera");
+const searchMedicineInput = document.getElementById("search-medicine");
 
 // Initiate socket for user
 let socket = io();
 
 let isCameraEnabled = false
+const allCameraSources = []
+let sourceId = undefined
 
 // All types of media devices the app needs permission of
-const userMediaDevices = {video: true};
+let userMediaDevices = {video: sourceId ? {mandatory: {sourceId: sourceId}} : true};
 
 const worker = Tesseract.createWorker({
     // logger: m => console.log(m)
@@ -35,6 +40,27 @@ async function getTextFromImage(image) {
 
 function removeDisabledCameraButton() {
     enableCameraButton.disabled = false;
+    setCameraDevices();
+}
+
+function showSwitchCameraButton() {
+    switchCameraButton.classList.remove("hidden")
+}
+
+function hideSwitchCameraButton() {
+    switchCameraButton.classList.add("hidden")
+}
+
+function setAvailableCameras() {
+    console.log("allCameraSources", allCameraSources);
+
+    if (allCameraSources.length > 1) {
+        enableCameraButton.classList.add("including-switch-camera")
+        switchCameraButton.classList.remove("hidden")
+    } else {
+        enableCameraButton.classList.remove("including-switch-camera")
+        switchCameraButton.classList.add("hidden")
+    }
 }
 
 function getRegistrationNumberFromText(text) {
@@ -50,6 +76,11 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
 
     enableCameraButton.addEventListener("click", callback => {
         enableCamera();
+    });
+
+    switchCameraButton.addEventListener("click", callback => {
+        setNextCamera();
+        enableCamera(sourceId);
     });
 
     disableCameraButton.addEventListener("click", callback => {
@@ -74,19 +105,43 @@ function showEnableCameraButton() {
     disableCameraButton.classList.add("hidden")
 }
 
-function printCameraDevices() {
-    navigator.mediaDevices.enumerateDevices()
+function setCameraDevices() {
+    allCameraSources.length = 0
+
+    return navigator.mediaDevices.enumerateDevices()
         .then(function (devices) {
             devices.forEach(function (device) {
                 // returns all the user's video inputs
                 if (device.kind === 'videoinput' &&
                     device.deviceId &&
                     device.deviceId.length) {
-                    // console.log("Camera permission was granted")
                     console.log("Device:", device.label)
+                    allCameraSources.push(device.deviceId)
                 }
             });
+            setAvailableCameras();
+            return true
         })
+}
+
+async function getUserMediaDevices(deviceId) {
+    await setCameraDevices();
+    sourceId = deviceId ? deviceId : allCameraSources[0]
+    console.log("sourceId", sourceId)
+    return {video: {mandatory: {sourceId: sourceId}}};
+}
+
+async function setNextCamera() {
+    if (allCameraSources.length > 1 && sourceId) {
+        const index = allCameraSources.indexOf(sourceId);
+
+        if (index >= 0 && index < allCameraSources.length - 1) {
+            sourceId = allCameraSources[index + 1]
+        } else if (index >= 0 && index === allCameraSources.length - 1) {
+            sourceId = allCameraSources[0]
+        }
+    }
+
 }
 
 // Show the camera content as soon as metadata is laoded
@@ -96,7 +151,9 @@ videoCanvas.addEventListener("loadedmetadata", callback => {
 
 let mediaStream;
 
-function enableCamera() {
+async function enableCamera(sourceId = undefined) {
+    const userMediaDevices = await getUserMediaDevices(sourceId)
+
     navigator.mediaDevices.getUserMedia(userMediaDevices).then((stream) => {
             console.log("Camera permission was granted")
 
@@ -109,12 +166,12 @@ function enableCamera() {
             takeSnapshots(stream)
         }
     ).catch(function (error) {
-        console.log("Camera permission was rejected or is not available")
+        console.log("Camera permission was rejected or is not available", error)
     }).finally(function () {
         isCameraEnabled = true
+        setCameraDevices()
     })
 
-    printCameraDevices()
 }
 
 function disableCamera() {
@@ -124,6 +181,7 @@ function disableCamera() {
         track.stop();
         videoCanvas.srcObject = undefined
         isCameraEnabled = false
+        setCameraDevices()
     });
 }
 
@@ -233,20 +291,22 @@ socket.on('search-result', function (result) {
 
     if (!result) return;
 
+    // Prepare the data used
     const registrationNumber = result.registrationNumber
     const name = result.name
     const activeIngredient = result.activeIngredient
 
+    // Create html template for the medicine
     const html = ` 
 <div class="medicine-item">
-    <div class="medicine-name-container">
-        <img alt="Medicine name" src="/img/icons/title-24px.svg">
-        <p class="medicine-name">${name}</p>
-    </div>
-    
     <div class="medicine-registration-number-container">
         <img alt="Registration number" src="/img/icons/assignment-24px.svg">
         <p class="medicine-registration-number">${registrationNumber}</p>
+    </div>
+    
+    <div class="medicine-name-container">
+        <img alt="Medicine name" src="/img/icons/title-24px.svg">
+        <p class="medicine-name">${name}</p>
     </div>
     
     <div class="medicine-active-ingredient-container">
@@ -255,7 +315,14 @@ socket.on('search-result', function (result) {
     </div>
 </div>
 `
-    document.getElementById("scan-result-container").innerHTML = html
+    // Insert medicine item into the DOM
+    scanResultContainer.innerHTML = html
+
+    // Show the medicine
+    scanResultContainer.classList.remove("hidden")
+
+    // Set the registration number in the search input
+    searchMedicineInput.value = registrationNumber
 });
 
 
