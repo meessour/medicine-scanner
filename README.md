@@ -13,6 +13,8 @@ This project features a medicine scanner using machine learning. It is able to d
     - [Onderzoeksvragen](#onderzoeksvragen)
     - [Scope](#scope)
     - [Planning](#planning)
+    - [Use Case](#use-case)
+    - [Interaction Diagram](#interaction-diagram)
 3. [Licence](#licence)    
 
 ## How to install
@@ -83,6 +85,11 @@ De opdrachtgever wilt een web app die bedoeld is voor medicijngebruikers, dat is
 
 Here are a few use cases of a medicine user using the app:
 ![Use cases](docs/img/readme/use_cases.png)
+
+### Interaction diagram
+
+Here is the interaction diagram of this app:
+![Interaction Diagram](docs/img/readme/interaction-diagram-meesterproef.png)
 
 ## Licence
 MIT © [Mees Sour](https://github.com/meessour)

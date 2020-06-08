@@ -13,9 +13,6 @@ let isCameraEnabled = false
 const allCameraSources = []
 let sourceId = undefined
 
-// All types of media devices the app needs permission of
-let userMediaDevices = {video: sourceId ? {mandatory: {sourceId: sourceId}} : true};
-
 const worker = Tesseract.createWorker({
     // logger: m => console.log(m)
 });
