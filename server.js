@@ -188,7 +188,6 @@ socketIo.on('connection', (socket) => {
                 // ((RVG(\d+|\/)+)|(RVH(\d+|\/)+)|(EU(\d+|\/)+)\d+)
                 // (RVG\d+)|(RVH\d+)|(EU(\d+|\/)+)\d+
 
-
                 stream.on("ready", function (fd) {
                     tesseractScanner(imageName).then(function (result) {
 

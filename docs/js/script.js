@@ -16,7 +16,8 @@ let scanProgress;
 
 const worker = Tesseract.createWorker({
     logger: m => {
-        scanProgress = m.progress;
+        scanProgress = m?.progress;
+        setLoadingProgress(scanProgress)
     }
 });
 
@@ -142,7 +143,6 @@ async function setNextCamera() {
 
 }
 
-
 let mediaStream;
 
 async function enableCamera(sourceId = undefined) {
@@ -187,7 +187,10 @@ async function enableCamera(sourceId = undefined) {
         isCameraEnabled = true
         setCameraDevices()
     })
+}
 
+function setLoadingProgress(scanProgress) {
+    // console.log("scanProgress", scanProgress)
 }
 
 function disableCamera() {
@@ -208,15 +211,10 @@ function takeSnapshots() {
     (function captureScreen() {
         if (mediaStream && mediaStream.active) {
 
-            new Promise(resolve => resolve(worker))
-                .then(workerState => {
-
-                    console.log("workerState", workerState)
-
+            new Promise(resolve => resolve(scanProgress))
+                .then(scanProgress => {
                     // Wait for the worker to finish current batch
-                    if (!workerState) return;
-
-                    console.log("Make new screenshot")
+                    if (scanProgress !== 1) return;
 
                     return getBlobScreenshot()
                         .then(blob => {
