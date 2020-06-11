@@ -21,6 +21,7 @@ try {
 
 }
 
+// At new medicine data from API; run
 // parseMedicineData();
 
 /**

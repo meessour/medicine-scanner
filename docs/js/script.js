@@ -6,6 +6,8 @@ const scanResultContainer = document.getElementById("scan-result-container");
 const switchCameraButton = document.getElementById("switch-camera");
 const searchMedicineInput = document.getElementById("search-medicine");
 
+const loadingBar = document.getElementById("loading-bar");
+
 // Initiate socket for user
 let socket = io();
 
@@ -89,6 +91,15 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
         setTimeout(function () {
             disableCamera();
         }, 1000);
+    });
+
+    searchMedicineInput.addEventListener("input", callback => {
+        const searchValue = searchMedicineInput.value
+        const registrationNumber = getRegistrationNumberFromText(searchValue)
+
+        return (registrationNumber && registrationNumber.length > 0)
+            ? fetchRegistrationNumber(registrationNumber)
+            : undefined
     });
 } else {
     console.log("getUserMedia() is not supported by your browser")
@@ -190,7 +201,10 @@ async function enableCamera(sourceId = undefined) {
 }
 
 function setLoadingProgress(scanProgress) {
-    // console.log("scanProgress", scanProgress)
+    // Percentage is 0 when progress is done (scanProgress = 1). This is to hide the loading bar when done
+    const percentage = (scanProgress !== 1) ? scanProgress * 100 : 0
+
+    loadingBar.style.width = `${percentage}%`
 }
 
 function disableCamera() {
@@ -225,11 +239,9 @@ function takeSnapshots() {
                             return getRegistrationNumberFromText(text)
                         })
                         .then(registrationNumber => {
-                            if (registrationNumber && registrationNumber.length > 0) {
-                                return fetchRegistrationNumber(registrationNumber)
-                            } else {
-                                return;
-                            }
+                            return (registrationNumber && registrationNumber.length > 0)
+                                ? fetchRegistrationNumber(registrationNumber)
+                                : undefined
                         })
                 })
                 .catch(error => {
