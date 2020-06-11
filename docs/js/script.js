@@ -12,12 +12,15 @@ let socket = io();
 let isCameraEnabled = false
 const allCameraSources = []
 let sourceId = undefined
+let scanProgress;
 
 const worker = Tesseract.createWorker({
-    // logger: m => console.log(m)
+    logger: m => {
+        scanProgress = m.progress;
+    }
 });
 
-// Initizalize worker
+// Initialize worker
 (async () => {
     await worker.load();
     await worker.loadLanguage('eng');
@@ -49,8 +52,6 @@ function hideSwitchCameraButton() {
 }
 
 function setAvailableCameras() {
-    console.log("allCameraSources", allCameraSources);
-
     if (allCameraSources.length > 1) {
         enableCameraButton.classList.add("including-switch-camera")
         switchCameraButton.classList.remove("hidden")
@@ -124,7 +125,7 @@ function setCameraDevices() {
 async function getUserMediaDevices(deviceId) {
     await setCameraDevices();
     sourceId = deviceId ? deviceId : allCameraSources[0]
-    console.log("sourceId", sourceId)
+
     return {video: {mandatory: {sourceId: sourceId}}};
 }
 
@@ -141,10 +142,6 @@ async function setNextCamera() {
 
 }
 
-// Show the camera content as soon as metadata is laoded
-videoCanvas.addEventListener("loadedmetadata", callback => {
-    showCameraCanvas()
-});
 
 let mediaStream;
 
@@ -155,11 +152,33 @@ async function enableCamera(sourceId = undefined) {
             console.log("Camera permission was granted")
 
             mediaStream = stream
+
+            // Show the camera content as soon as metadata is laoded
+            videoCanvas.addEventListener("loadedmetadata", callback => {
+                const videoWidth = videoCanvas.videoWidth
+                const videoHeight = videoCanvas.videoHeight
+                const canvasWidth = videoCanvas.offsetWidth
+
+                // Ratio table overview for calculating correct height taking the aspect ratio into account:
+                //
+                //              | Height       | Width       |
+                //  ------------|--------------|-------------|
+                //  VideoCanvas | canvasHeight | canvasWidth |
+                //  VideoStream | videoHeight  | videoWidth  |
+                //  ------------|--------------|-------------|
+
+                const canvasHeight = (videoHeight * canvasWidth / videoWidth)
+
+                console.log("canvasWidth:", canvasWidth, "canvasHeight:", canvasHeight)
+
+                showCameraCanvas(parseInt(canvasHeight))
+                showHideCameraButton();
+            });
+
             videoCanvas.srcObject = stream
             videoCanvas.play();
 
-            showHideCameraButton();
-
+            console.log("Taking snapshots")
             takeSnapshots(stream)
         }
     ).catch(function (error) {
@@ -187,21 +206,34 @@ function takeSnapshots() {
     const intervalPerScreenshot = 2000;
 
     (function captureScreen() {
-        console.log("go!")
         if (mediaStream && mediaStream.active) {
-            getBlobScreenshot().then(blob => {
-                const image = getImageFromBlob(blob)
-                return getTextFromImage(image)
-            })
-                .then(text => {
-                    return getRegistrationNumberFromText(text)
-                }).then(registrationNumber => {
-                if (registrationNumber && registrationNumber.length > 0) {
-                    return fetchRegistrationNumber(registrationNumber)
-                } else {
-                    return;
-                }
-            })
+
+            new Promise(resolve => resolve(worker))
+                .then(workerState => {
+
+                    console.log("workerState", workerState)
+
+                    // Wait for the worker to finish current batch
+                    if (!workerState) return;
+
+                    console.log("Make new screenshot")
+
+                    return getBlobScreenshot()
+                        .then(blob => {
+                            const image = getImageFromBlob(blob)
+                            return getTextFromImage(image)
+                        })
+                        .then(text => {
+                            return getRegistrationNumberFromText(text)
+                        })
+                        .then(registrationNumber => {
+                            if (registrationNumber && registrationNumber.length > 0) {
+                                return fetchRegistrationNumber(registrationNumber)
+                            } else {
+                                return;
+                            }
+                        })
+                })
                 .catch(error => {
                     console.log("something went wrong", error)
                 }).finally(() => {
@@ -212,23 +244,6 @@ function takeSnapshots() {
             // clearInterval(interval);
         }
     })();
-
-    // let interval = setInterval(function captureScreen() {
-    //     console.log("go!")
-    //     if (mediaStream && mediaStream.active) {
-    //         getBlobScreenshot().then(blob => {
-    //             uploadScreenshot(blob)
-    //         }).catch(error => {
-    //             console.log("something went wrong", error)
-    //         }).finally(() => {
-    //
-    //         })
-    //     } else {
-    //         console.log("Interval removed")
-    //         clearInterval(interval);
-    //     }
-    //
-    // }, intervalPerScreenshot);
 }
 
 function getImageFromBlob(blob) {
@@ -323,12 +338,18 @@ socket.on('search-result', function (result) {
 });
 
 
-function showCameraCanvas() {
+function showCameraCanvas(canvasHeight) {
+    videoCanvas.style.maxHeight = `${canvasHeight}px`
+    videoCanvas.style.minHeight = `${canvasHeight}px`
+
     videoCanvas.classList.remove("hideCameraCanvas")
     videoCanvas.classList.add("showCameraCanvas")
 }
 
 function hideCameraCanvas() {
+    videoCanvas.style.maxHeight = 0
+    videoCanvas.style.minHeight = 0
+
     videoCanvas.classList.remove("showCameraCanvas")
     videoCanvas.classList.add("hideCameraCanvas")
 }
