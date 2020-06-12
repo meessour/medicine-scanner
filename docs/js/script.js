@@ -5,6 +5,7 @@ const disableCameraButton = document.getElementById("disable-camera-button");
 const scanResultContainer = document.getElementById("scan-result-container");
 const switchCameraButton = document.getElementById("switch-camera");
 const searchMedicineInput = document.getElementById("search-medicine");
+const progressText = document.getElementById("progress-text");
 
 const loadingBar = document.getElementById("loading-bar");
 
@@ -205,6 +206,7 @@ function setLoadingProgress(scanProgress) {
     const percentage = (scanProgress !== 1) ? scanProgress * 100 : 0
 
     loadingBar.style.width = `${percentage}%`
+    progressText.innerText = percentage ? `Progress (${Math.round(percentage)}%):` : 'Progress:'
 }
 
 function disableCamera() {
@@ -364,3 +366,30 @@ function hideCameraCanvas() {
     videoCanvas.classList.add("hideCameraCanvas")
 }
 
+// Modal stuff down here (https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal)
+
+// Get the modal
+const modal = document.getElementById("info-modal");
+
+// Get the button that opens the modal
+const btn = document.getElementById("camera-info");
+
+// Get the <span> element that closes the modal
+const span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}

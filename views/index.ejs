@@ -1,25 +1,25 @@
 <%- include ("./partials/head.ejs") %>
 
-<div id="camera-container" class="centered">
+<div id="camera-container" class="horizontalCentered">
     <video autoplay id="user-camera" class="hideCameraCanvas"></video>
     <div id="camera-controls-container">
-        <button id="enable-camera-button" class="input" disabled>Enable camera</button>
-        <button id="disable-camera-button" class="input hidden">Disable camera</button>
-        <button id="switch-camera" class="hidden">
+        <button id="enable-camera-button" class="inputButton" disabled>Enable camera</button>
+        <button id="disable-camera-button" class="inputButton hidden">Disable camera</button>
+        <button id="switch-camera" class="inputButton hidden">
             <img alt="Search" class="search-icon" src="/img/icons/switch_video-24px.svg">
         </button>
+        <!-- Information button icon -->
+        <img id="camera-info" alt="Information" class="search-icon" src="/img/icons/info-24px.svg">
     </div>
+    <p id="progress-text">Progress:</p>
 
     <div id="loading-bar-container">
         <div id="loading-bar"></div>
     </div>
-    <!-- Divder-->
-    <!--    <hr class="rounded">-->
-
     <div class="extra-options-container">
         <div class="search-wrapper">
-            <input id="search-medicine" type="text" placeholder="Search medicine..."/>
-            <button type="submit" id="search-button">
+            <input id="search-medicine" class="inputTextField" type="text" placeholder="Search medicine..."/>
+            <button type="submit" id="search-button" class="inputButton">
                 <img alt="Search" class="search-icon" src="/img/icons/search-24px.svg">
             </button>
         </div>
@@ -27,7 +27,23 @@
 
     <div id="scan-result-container" class="hidden">
     </div>
+</div>
 
+<!-- The Modal -->
+<div id="info-modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Where is my camera used for?</h1>
+        <p>You camera will be used to identify text using an Optical Character Recognizer (OCR).</p>
+        <h1>What will happen my scan results?</h1>
+        <p>Nothing. The algorithm's processing and data handeling takes place on your browser. <b>No</b> snapshots or scanned text data will be saved on a server or database. Only positive scan results will be proccesssed on the server in order to determine the associated medicine data</p>
+        <h1>Do I need to use the camera?</h1>
+        <p>No you don't. Using your camera is totally optional. You can also manually look up a medicine registration number</p>
+        <h1>How do I now this app is trustworthy?</h1>
+        <p>All code is public at <a class="redirect-link" href="https://github.com/meessour/meesterproef-1920"><b>Github</b></a></p>
+
+    </div>
 </div>
 
 <%- include ("./partials/footer.ejs") %>

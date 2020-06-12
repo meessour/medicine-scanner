@@ -10,13 +10,19 @@
 }
 
 * {
-    font-family: 'Comfortaa', cursive;
+    font-family: 'Ubuntu', cursive;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 b {
-    font-weight: 700;
+    font-weight: 800;
+}
+
+h1 {
+    font-weight: 800;
+    font-size: 20px;
+
 }
 
 html,
@@ -28,7 +34,7 @@ body {
     width: 100%;
 }
 
-.centered, body {
+.horizontalCentered, body {
     text-align: center;
     position: absolute;
     left: 50%;
@@ -49,12 +55,18 @@ body {
     background: var(--greenYellow);
 }
 
-
 #camera-container {
     width: 503px;
     max-width: 90%;
 
     margin-bottom: 16px;
+}
+
+#progress-text{
+    color: var(--greenYellow);
+    text-align: start;
+    margin: 8px 0 4px 0;
+    letter-spacing: 0.5px;
 }
 
 #user-camera {
@@ -99,22 +111,22 @@ body {
 
 
 .including-switch-camera {
-    border-radius: 6px 0 0 6px;
+    border-radius: 6px 0 0 6px !important;
     margin-right: 6px !important;
 }
 
-#enable-camera-button {
-    margin-right: 8px;
-    margin-bottom: 0;
+#camera-info {
+    background-color: transparent;
+    border: none;
 }
 
-#loading-bar-container{
+#loading-bar-container {
     width: 100%;
     height: 12px;
 
     border: 2px solid var(--greenYellow);
     border-radius: 4px;
-    margin: 12px 0 12px 0;
+    margin-bottom: 12px;
 }
 
 #loading-bar {
@@ -151,7 +163,7 @@ hr.rounded {
     width: 100%;
 }
 
-input, button {
+.inputButton, .inputTextField {
     height: 34px;
     width: fit-content;
 
@@ -160,8 +172,6 @@ input, button {
     padding: 0 12px;
 
     white-space: nowrap;
-
-    margin-bottom: 12px;
 
     border-radius: 6px;
 }
@@ -215,7 +225,7 @@ button:disabled {
     justify-content: space-between;
     padding: 12px;
 
-    margin: 0 8px 0 0;
+    margin: 12px 0 0 0;
 
     border-radius: 6px;
 }
@@ -233,12 +243,19 @@ button:disabled {
     margin: 2px 0;
 }
 
-button:hover:enabled {
+button:hover:enabled, #camera-info:hover {
     cursor: pointer;
 }
 
 .search-icon {
     vertical-align: middle;
+}
+
+
+#camera-info {
+    height: 34px;
+    width: auto;
+    margin-left: 8px;
 }
 
 /* Switch styling -start */
@@ -315,3 +332,65 @@ input:checked + .slider:before {
 }
 
 /* Switch styling -end */
+
+/* Modal stuff */
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+    border-radius: 6px;
+}
+
+.redirect-link{
+    color: var(--maximumPurple);
+    text-decoration: none;
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: var(--greenYellow);
+    margin: auto;
+    padding: 8px 16px;
+    border: 1px solid #888;
+
+    width: 503px; /* Full width */
+    max-width: 85%;
+
+    text-align: start;
+    border-radius: 6px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+
+
+/* The Close Button */
+.close {
+    color: #000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
