@@ -195,14 +195,16 @@ button:disabled {
     height: 34px;
     width: 34px;
 
-    margin: 0 0 2px -6px;
+    margin: 0 0 0 -6px;
 
     vertical-align: middle;
 
     border-left: 1px solid black;
     border-radius: 0 6px 6px 0;
 }
-
+#search-button{
+    margin-bottom: 2px;
+}
 .result-container {
     width: 100%;
     height: fit-content;

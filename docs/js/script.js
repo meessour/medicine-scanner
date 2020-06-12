@@ -38,7 +38,7 @@ async function getTextFromImage(image) {
     if (!isCameraEnabled) return;
 
     const {data: {text}} = await worker.recognize(image);
-    console.log(text);
+    console.log("Text found:\n", text);
     return text
 }
 
@@ -178,10 +178,10 @@ async function enableCamera(sourceId = undefined) {
                 //  VideoCanvas | canvasHeight | canvasWidth |
                 //  VideoStream | videoHeight  | videoWidth  |
                 //  ------------|--------------|-------------|
+                //
+                // In dutch this is called a "kruistabel"
 
                 const canvasHeight = (videoHeight * canvasWidth / videoWidth)
-
-                console.log("canvasWidth:", canvasWidth, "canvasHeight:", canvasHeight)
 
                 showCameraCanvas(parseInt(canvasHeight))
                 showHideCameraButton();
@@ -283,7 +283,6 @@ function getBlobScreenshot() {
         if (!blob) throw "No blob file was created"
 
         const blobSizeMb = (Math.round((blob.size / 1000000) * 10) / 10)
-        console.log("Blob size in MB:", blobSizeMb)
 
         // return blob
         return blob
@@ -312,34 +311,39 @@ function fetchRegistrationNumber(registrationNumber) {
 }
 
 socket.on('search-result', function (result) {
-    console.log("search result", result);
+    console.log("Associated medicine data", result);
 
     if (!result) return;
 
     // Prepare the data used
     const registrationNumber = result.registrationNumber
-    const name = result.name
-    const activeIngredient = result.activeIngredient
-
+    const allNames = result.name.split(/\|/)
+    const activeIngredients = result.activeIngredient.split(/\|/)
+    
     // Create html template for the medicine
-    const html = ` 
-<div class="medicine-item">
-    <div class="medicine-registration-number-container">
+    let html = `<div class="medicine-item">`
+
+    html += `<div class="medicine-registration-number-container">
         <img alt="Registration number" src="/img/icons/assignment-24px.svg">
         <p class="medicine-registration-number">${registrationNumber}</p>
-    </div>
-    
-    <div class="medicine-name-container">
+    </div>`
+
+    for (let i = 0; i < allNames.length; i++) {
+        html += `<div class="medicine-name-container">
         <img alt="Medicine name" src="/img/icons/title-24px.svg">
-        <p class="medicine-name">${name}</p>
-    </div>
-    
-    <div class="medicine-active-ingredient-container">
+        <p class="medicine-name">${allNames[i]}</p>
+        </div>`
+    }
+
+    for (let i = 0; i < activeIngredients.length; i++) {
+        html += `<div class="medicine-active-ingredient-container">
         <img alt="Active ingrediënt" src="/img/icons/scatter_plot-24px.svg">
-        <p class="medicine-active-ingredient">${activeIngredient}</p>
-    </div>
-</div>
-`
+        <p class="medicine-active-ingredient">${activeIngredients[i]}</p>
+    </div>`
+    }
+
+    html += `</div>`
+
     // Insert medicine item into the DOM
     scanResultContainer.innerHTML = html
 
@@ -379,17 +383,17 @@ const btn = document.getElementById("camera-info");
 const span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal
-btn.onclick = function() {
+btn.onclick = function () {
     modal.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
+span.onclick = function () {
     modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }

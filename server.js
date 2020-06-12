@@ -249,8 +249,6 @@ socketIo.on('connection', (socket) => {
     socket.on('get-medicine', function (registrationNumber, response) {
         if (!registrationNumber) return;
 
-        console.log("get-medicine called");
-
         const medicineInformation = getMedicineInformation(registrationNumber)
 
         if (registrationNumber && medicineInformation) {
