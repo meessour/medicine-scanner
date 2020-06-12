@@ -206,6 +206,7 @@ function setLoadingProgress(scanProgress) {
     const percentage = (scanProgress !== 1) ? scanProgress * 100 : 0
 
     loadingBar.style.width = `${percentage}%`
+    percentage === 0 ? loadingBar.style.maxWidth = 0 : loadingBar.style.maxWidth = null
     progressText.innerText = percentage ? `Progress (${Math.round(percentage)}%):` : 'Progress:'
 }
 
