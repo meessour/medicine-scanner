@@ -21,11 +21,10 @@ try {
 
 }
 
-// At new medicine data from API; run
+// Run if new medicine data from API is available
 // parseMedicineData();
 
 /**
- * Data retrieved from source are objects in a long array.
  * With this function all data is formatted in an object with objects identified by its key,
  * which is the registrationNumber
  *
