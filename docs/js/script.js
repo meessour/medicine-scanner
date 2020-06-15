@@ -137,8 +137,10 @@ function setCameraDevices() {
 }
 
 async function getUserMediaDevices(deviceId) {
-    await setCameraDevices();
-    sourceId = deviceId && allCameraSources.includes(deviceId)? deviceId : allCameraSources[0]
+    if (!deviceId)
+        await setCameraDevices();
+
+    sourceId = deviceId ? deviceId : allCameraSources[0]
 
     return {video: {mandatory: {sourceId: sourceId}}};
 }
@@ -322,7 +324,7 @@ socket.on('search-result', function (result) {
     const registrationNumber = result.registrationNumber
     const allNames = result.name.split(/\|/)
     const activeIngredients = result.activeIngredient.split(/\|/)
-    
+
     // Create html template for the medicine
     let html = `<div class="medicine-item">`
 
