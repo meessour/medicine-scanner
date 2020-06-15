@@ -82,7 +82,7 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
     });
 
     switchCameraButton.addEventListener("click", callback => {
-        // disableCamera();
+        disableCamera();
         setNextCamera().then(newSourceId => {
             enableCamera(newSourceId);
         })
@@ -182,7 +182,6 @@ async function enableCamera(sourceId = undefined) {
             console.log("Camera permission was granted")
 
             mediaStream = stream
-            videoCanvas.srcObject = undefined
 
             // Show the camera content as soon as metadata is laoded
             videoCanvas.addEventListener("loadedmetadata", callback => {
@@ -236,7 +235,6 @@ function disableCamera() {
         track.stop();
         videoCanvas.srcObject = undefined
         isCameraEnabled = false
-        setCameraDevices()
     });
 }
 
