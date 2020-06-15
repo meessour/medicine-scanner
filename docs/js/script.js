@@ -144,8 +144,12 @@ async function getUserMediaDevices(deviceId) {
 
     sourceId = deviceId ? deviceId : allCameraSources[0];
 
-    setLogText(`Camera devices: ${allCameraSources ? allCameraSources.length : 'unknown'}\n
-    Current selected device: ${allCameraSources && sourceId ? (allCameraSources.indexOf(sourceId) +1) : 'unknown'}`)
+    setLogText(`Camera devices: ${allCameraSources ? allCameraSources.length : 'unknown'}
+    Current selected camera: ${allCameraSources && sourceId ? (allCameraSources.indexOf(sourceId) + 1) : 'unknown'}
+    
+    Selected camera Id:
+    ${sourceId}`
+    )
 
     return {video: {mandatory: {sourceId: sourceId}}};
 }
@@ -178,6 +182,7 @@ async function enableCamera(sourceId = undefined) {
             console.log("Camera permission was granted")
 
             mediaStream = stream
+            videoCanvas.srcObject = undefined
 
             // Show the camera content as soon as metadata is laoded
             videoCanvas.addEventListener("loadedmetadata", callback => {

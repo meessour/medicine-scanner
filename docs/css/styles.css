@@ -267,8 +267,6 @@ button:disabled {
 #status-text {
     width: fit-content;
 
-    line-height: 12px;
-
     overflow-wrap: anywhere;
 
     color: white;
