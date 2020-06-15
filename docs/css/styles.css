@@ -1,5 +1,7 @@
 :root {
     --purple: #822E81;
+    /*--purple2: rgba(130, 46, 129, 0.7);*/
+    --dark: #232526;
     --primary: #F0F2A6;
     --green: #44A76D;
     --disabledColor: #77797A;
@@ -56,13 +58,13 @@ body {
 }
 
 #camera-container {
-    width: 503px;
+    width: 600px;
     max-width: 90%;
 
     margin-bottom: 16px;
 }
 
-#progress-text {
+#progress-text, #status-text-indicator {
     color: var(--primary);
     text-align: start;
     margin: 8px 0 4px 0;
@@ -239,10 +241,39 @@ button:disabled {
     border-radius: 6px;
 }
 
+
 .medicine-name, .medicine-registration-number, .medicine-active-ingredient {
     margin: 0 0 0 8px;
 
     align-self: center;
+}
+
+.status-text-container {
+    border: 2px solid var(--primary);
+
+    height: fit-content;
+
+    text-align: start;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    margin: 0 0 12px 0;
+
+    border-radius: 4px;
+}
+
+#status-text {
+    width: fit-content;
+
+    line-height: 12px;
+
+    overflow-wrap: anywhere;
+
+    color: white;
+    margin: 12px;
+    transition: all 0.5s linear;
 }
 
 .medicine-name-container, .medicine-registration-number-container, .medicine-active-ingredient-container {

@@ -6,6 +6,7 @@ const scanResultContainer = document.getElementById("scan-result-container");
 const switchCameraButton = document.getElementById("switch-camera");
 const searchMedicineInput = document.getElementById("search-medicine");
 const progressText = document.getElementById("progress-text");
+const statusText = document.getElementById("status-text");
 
 const loadingBar = document.getElementById("loading-bar");
 
@@ -81,6 +82,7 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
     });
 
     switchCameraButton.addEventListener("click", callback => {
+        // disableCamera();
         setNextCamera().then(newSourceId => {
             enableCamera(newSourceId);
         })
@@ -122,12 +124,12 @@ function setCameraDevices() {
 
     return navigator.mediaDevices.enumerateDevices()
         .then(function (devices) {
+
             devices.forEach(function (device) {
                 // returns all the user's video inputs
                 if (device.kind === 'videoinput' &&
                     device.deviceId &&
                     device.deviceId.length) {
-                    console.log("Device:", device.label)
                     allCameraSources.push(device.deviceId)
                 }
             });
@@ -140,9 +142,16 @@ async function getUserMediaDevices(deviceId) {
     if (!deviceId)
         await setCameraDevices();
 
-    sourceId = deviceId ? deviceId : allCameraSources[0]
+    sourceId = deviceId ? deviceId : allCameraSources[0];
+
+    setLogText(`Camera devices: ${allCameraSources ? allCameraSources.length : 'unknown'}\n
+    Current selected device: ${allCameraSources && sourceId ? (allCameraSources.indexOf(sourceId) +1) : 'unknown'}`)
 
     return {video: {mandatory: {sourceId: sourceId}}};
+}
+
+function setLogText(text) {
+    statusText.innerText = text
 }
 
 async function setNextCamera() {
@@ -152,7 +161,7 @@ async function setNextCamera() {
         if (index >= 0 && index < allCameraSources.length - 1) {
             sourceId = allCameraSources[index + 1]
             return allCameraSources[index + 1]
-        } else if (index >= 0 && index === allCameraSources.length - 1) {
+        } else {
             sourceId = allCameraSources[0]
             return allCameraSources[0]
         }
