@@ -7,6 +7,7 @@ const switchCameraButton = document.getElementById("switch-camera");
 const searchMedicineInput = document.getElementById("search-medicine");
 const progressText = document.getElementById("progress-text");
 const statusText = document.getElementById("status-text");
+const cancelScanButton = document.getElementById("cancel-scan-button");
 
 const loadingBar = document.getElementById("loading-bar");
 
@@ -38,9 +39,26 @@ const worker = Tesseract.createWorker({
 async function getTextFromImage(image) {
     if (!isCameraEnabled) return;
 
-    const {data: {text}} = await worker.recognize(image);
+    cancelScanButton.disabled = false
+
+    let text
+
+    try {
+        const data = await worker.recognize(image);
+        text = data.data.text
+    } catch (e) {
+        console.log(e)
+    }
+
+    cancelScanButton.disabled = true
     console.log("Text found:\n", text);
     return text
+}
+
+async function stopWorker() {
+    // await worker.terminate();
+    console.log("load?")
+    return true;
 }
 
 function removeDisabledCameraButton() {
@@ -95,6 +113,12 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
         setTimeout(function () {
             disableCamera();
         }, 1000);
+    });
+
+    cancelScanButton.addEventListener("click", callback => {
+        stopWorker().then(() => {
+            takeSnapshots()
+        })
     });
 
     searchMedicineInput.addEventListener("input", callback => {
@@ -239,41 +263,37 @@ function disableCamera() {
 }
 
 function takeSnapshots() {
-    // interval in millisecconds per screencapture
-    const intervalPerScreenshot = 2000;
+    if (mediaStream && mediaStream.active) {
 
-    (function captureScreen() {
-        if (mediaStream && mediaStream.active) {
+        new Promise(resolve => resolve(scanProgress))
+            .then(scanProgress => {
+                // Wait for the worker to finish current batch
+                if (scanProgress !== 1) return;
 
-            new Promise(resolve => resolve(scanProgress))
-                .then(scanProgress => {
-                    // Wait for the worker to finish current batch
-                    if (scanProgress !== 1) return;
-
-                    return getBlobScreenshot()
-                        .then(blob => {
-                            const image = getImageFromBlob(blob)
-                            return getTextFromImage(image)
-                        })
-                        .then(text => {
-                            return getRegistrationNumberFromText(text)
-                        })
-                        .then(registrationNumber => {
-                            return (registrationNumber && registrationNumber.length > 0)
-                                ? fetchRegistrationNumber(registrationNumber)
-                                : undefined
-                        })
-                })
-                .catch(error => {
-                    console.log("something went wrong", error)
-                }).finally(() => {
-                setTimeout(captureScreen, intervalPerScreenshot);
+                return getBlobScreenshot()
+                    .then(blob => {
+                        const image = getImageFromBlob(blob)
+                        return getTextFromImage(image)
+                    })
+                    .then(text => {
+                        return getRegistrationNumberFromText(text)
+                    })
+                    .then(registrationNumber => {
+                        return (registrationNumber && registrationNumber.length > 0)
+                            ? fetchRegistrationNumber(registrationNumber)
+                            : undefined
+                    })
             })
-        } else {
-            console.log("Interval removed")
-            // clearInterval(interval);
-        }
-    })();
+            .catch(error => {
+                console.log("something went wrong", error)
+            }).finally(() => {
+            // interval in millisecconds per screencapture
+            setTimeout(takeSnapshots, 2000);
+        })
+    } else {
+        console.log("Interval removed")
+        // clearInterval(interval);
+    }
 }
 
 function getImageFromBlob(blob) {

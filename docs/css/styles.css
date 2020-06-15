@@ -67,7 +67,7 @@ body {
 #progress-text, #status-text-indicator {
     color: var(--primary);
     text-align: start;
-    margin: 8px 0 4px 0;
+    margin: 0 0 4px 0;
     letter-spacing: 0.5px;
 }
 
@@ -145,8 +145,8 @@ body {
     margin-bottom: 0;
 }
 
-#camera-controls-container {
-    margin: 0 auto;
+.button-container {
+    margin: 0 auto 12px auto;
     height: fit-content;
 
     display: flex;

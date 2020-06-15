@@ -2,7 +2,7 @@
 
 <div id="camera-container" class="horizontalCentered">
     <video autoplay id="user-camera" class="hideCameraCanvas"></video>
-    <div id="camera-controls-container">
+    <div class="button-container">
         <button id="enable-camera-button" class="inputButton" disabled>Enable camera</button>
         <button id="disable-camera-button" class="inputButton hidden">Disable camera</button>
         <button id="switch-camera" class="inputButton hidden">
@@ -11,6 +11,11 @@
         <!-- Information button icon -->
         <img id="camera-info" alt="Information" class="search-icon" src="/img/icons/info-24px.svg">
     </div>
+
+    <div class="button-container">
+        <button id="cancel-scan-button" class="inputButton" disabled>Cancel search</button>
+    </div>
+
     <p id="progress-text">Progress:</p>
 
     <div id="loading-bar-container">
@@ -21,6 +26,7 @@
     <div class="status-text-container">
         <p id="status-text"></p>
     </div>
+
     <div class="extra-options-container">
         <div class="search-wrapper">
             <input id="search-medicine" class="inputTextField" type="text" placeholder="Search medicine..."/>
