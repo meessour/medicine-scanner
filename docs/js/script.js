@@ -77,12 +77,13 @@ function getRegistrationNumberFromText(text) {
 if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
 
     enableCameraButton.addEventListener("click", callback => {
-        enableCamera();
+        enableCamera(sourceId);
     });
 
     switchCameraButton.addEventListener("click", callback => {
-        setNextCamera();
-        enableCamera(sourceId);
+        setNextCamera().then(newSourceId => {
+            enableCamera(newSourceId);
+        })
     });
 
     disableCameraButton.addEventListener("click", callback => {
@@ -137,7 +138,7 @@ function setCameraDevices() {
 
 async function getUserMediaDevices(deviceId) {
     await setCameraDevices();
-    sourceId = deviceId ? deviceId : allCameraSources[0]
+    sourceId = deviceId && allCameraSources.includes(deviceId)? deviceId : allCameraSources[0]
 
     return {video: {mandatory: {sourceId: sourceId}}};
 }
@@ -148,8 +149,10 @@ async function setNextCamera() {
 
         if (index >= 0 && index < allCameraSources.length - 1) {
             sourceId = allCameraSources[index + 1]
+            return allCameraSources[index + 1]
         } else if (index >= 0 && index === allCameraSources.length - 1) {
             sourceId = allCameraSources[0]
+            return allCameraSources[0]
         }
     }
 
