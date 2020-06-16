@@ -5,6 +5,9 @@ const disableCameraButton = document.getElementById("disable-camera-button");
 const scanResultContainer = document.getElementById("scan-result-container");
 const switchCameraButton = document.getElementById("switch-camera");
 const searchMedicineInput = document.getElementById("search-medicine");
+
+const cameraComponents = document.getElementById("camera-components");
+
 const progressText = document.getElementById("progress-text");
 const statusText = document.getElementById("status-text");
 const cancelScanButton = document.getElementById("cancel-scan-button");
@@ -51,7 +54,9 @@ async function getTextFromImage(image) {
     }
 
     cancelScanButton.disabled = true
-    console.log("Text found:\n", text);
+    setLogText(`Text found:
+    
+                    ${text}`)
     return text
 }
 
@@ -85,11 +90,17 @@ function setAvailableCameras() {
 }
 
 function getRegistrationNumberFromText(text) {
-    text = text ? text.trim().replace(/ /g, '') : text
+    text = removeWhiteSpaceFromText(text)
     // RegEx for getting registration numbers starting with either "RVG", "RVH" or "EU/" and ending with a number
     const rx = /(RVG|RVH|EU\/)\d+(\d+|\/|\=)+/
     const arr = rx.exec(text);
     return arr ? arr[0] : undefined;
+}
+
+function removeWhiteSpaceFromText(text) {
+    return text && text.length ?
+        text.trim().replace(/ /g, '').toUpperCase() :
+        text
 }
 
 // Check if the user can use mediaDevices
@@ -97,6 +108,7 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
 
     enableCameraButton.addEventListener("click", callback => {
         enableCamera(sourceId);
+        showRelevantComponents();
     });
 
     switchCameraButton.addEventListener("click", callback => {
@@ -109,6 +121,7 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
     disableCameraButton.addEventListener("click", callback => {
         showEnableCameraButton();
         hideCameraCanvas();
+        hideRelevantComponents()
 
         setTimeout(function () {
             disableCamera();
@@ -123,11 +136,14 @@ if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
 
     searchMedicineInput.addEventListener("input", callback => {
         const searchValue = searchMedicineInput.value
+
         const registrationNumber = getRegistrationNumberFromText(searchValue)
 
+        // If the registration number exactly matches the search value, fetch it.
+        // Otherwise look up the search value
         return (registrationNumber && registrationNumber.length > 0)
             ? fetchRegistrationNumber(registrationNumber)
-            : undefined
+            : lookUpMedicine(searchValue)
     });
 } else {
     console.log("getUserMedia() is not supported by your browser")
@@ -160,6 +176,19 @@ function setCameraDevices() {
             setAvailableCameras();
             return true
         })
+}
+
+function showRelevantComponents() {
+    // cameraComponents.classList.remove('hidden')
+    // cameraComponents.style.maxHeight = null
+    cameraComponents.style.height = 'fit-content'
+
+}
+
+function hideRelevantComponents() {
+    // cameraComponents.classList.add('hidden')
+    cameraComponents.style.height = 0
+    // cameraComponents.style.maxHeight = 0
 }
 
 async function getUserMediaDevices(deviceId) {
@@ -270,12 +299,15 @@ function takeSnapshots() {
                 // Wait for the worker to finish current batch
                 if (scanProgress !== 1) return;
 
+                let scannedText
+
                 return getBlobScreenshot()
                     .then(blob => {
                         const image = getImageFromBlob(blob)
                         return getTextFromImage(image)
                     })
                     .then(text => {
+                        scannedText = text
                         return getRegistrationNumberFromText(text)
                     })
                     .then(registrationNumber => {
@@ -347,49 +379,75 @@ function fetchRegistrationNumber(registrationNumber) {
     });
 }
 
+function lookUpMedicine(text) {
+    text = removeWhiteSpaceFromText(text)
+    if (!text) {
+        scanResultContainer.innerHTML = ``
+        return;
+    }
+
+    return socket.emit('search-medicine', text, (response) => {
+        if (response) {
+            console.log("response true!")
+        }
+        return true;
+    });
+}
+
 socket.on('search-result', function (result) {
     console.log("Associated medicine data", result);
 
-    if (!result) return;
-
-    // Prepare the data used
-    const registrationNumber = result.registrationNumber
-    const allNames = result.name.split(/\|/)
-    const activeIngredients = result.activeIngredient.split(/\|/)
-
-    // Create html template for the medicine
-    let html = `<div class="medicine-item">`
-
-    html += `<div class="medicine-registration-number-container">
-        <img alt="Registration number" src="/img/icons/assignment-24px.svg">
-        <p class="medicine-registration-number">${registrationNumber}</p>
-    </div>`
-
-    for (let i = 0; i < allNames.length; i++) {
-        html += `<div class="medicine-name-container">
-        <img alt="Medicine name" src="/img/icons/title-24px.svg">
-        <p class="medicine-name">${allNames[i]}</p>
-        </div>`
-    }
-
-    for (let i = 0; i < activeIngredients.length; i++) {
-        html += `<div class="medicine-active-ingredient-container">
-        <img alt="Active ingrediënt" src="/img/icons/scatter_plot-24px.svg">
-        <p class="medicine-active-ingredient">${activeIngredients[i]}</p>
-    </div>`
-    }
-
-    html += `</div>`
+    const medicineResultsHtml = getMedicineResultsHtml(result)
 
     // Insert medicine item into the DOM
-    scanResultContainer.innerHTML = html
+    scanResultContainer.innerHTML = medicineResultsHtml
 
     // Show the medicine
     scanResultContainer.classList.remove("hidden")
-
-    // Set the registration number in the search input
-    searchMedicineInput.value = registrationNumber
 });
+
+function getMedicineResultsHtml(result) {
+    let html = `<p id="results-amount-indicator">Showing <b>${result.length}</b> medicine</p>`
+
+    for (let i = 0; i < result.length; i++) {
+        // Prepare the data used
+        const registrationNumber = result[i].registrationNumber
+        const allNames = result[i].name.split(/\|/)
+        const activeIngredients = result[i].activeIngredient.split(/\|/)
+
+        // Create html template for the medicine
+        html += `<div class="medicine-item">`
+
+        if (registrationNumber) {
+            html += `<div class="medicine-registration-number-container">
+        <img alt="Registration number" src="/img/icons/assignment-24px.svg">
+        <p class="medicine-registration-number">${registrationNumber}</p>
+            </div>`
+        }
+
+        for (let i = 0; i < allNames.length; i++) {
+            if (allNames[i] && allNames[i].length) {
+                html += `<div class="medicine-name-container">
+                <img alt="Medicine name" src="/img/icons/title-24px.svg">
+                <p class="medicine-name">${allNames[i]}</p>
+                </div>`
+            }
+        }
+
+        for (let i = 0; i < activeIngredients.length; i++) {
+            if (activeIngredients[i] && activeIngredients[i].length) {
+                html += `<div class="medicine-active-ingredient-container">
+                        <img alt="Active ingrediënt" src="/img/icons/scatter_plot-24px.svg">
+                        <p class="medicine-active-ingredient">${activeIngredients[i]}</p>
+                        </div>`
+            }
+        }
+
+        html += `</div>`
+    }
+
+    return html;
+}
 
 
 function showCameraCanvas(canvasHeight) {

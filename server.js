@@ -254,19 +254,81 @@ socketIo.on('connection', (socket) => {
             console.log("medicine found!", medicineInformation)
 
             // Send the medicine information back to the client
-            socket.emit('search-result', {
+            socket.emit('search-result', [{
                 registrationNumber: getReadableRegistrationNumber(registrationNumber),
                 name: medicineInformation.name,
                 activeIngredient: medicineInformation.activeIngredient,
-            });
+            }]);
         }
     });
 
+    socket.on('search-medicine', function (text, response) {
+        if (!text) return;
+
+        let results = findAllMatches(medicineArray, text)
+        // results = parseMedicineResults(results)
+
+        console.log("search-medicine found!", results.length, "results")
+
+        // Send the medicine information back to the client
+        socket.emit('search-result', results);
+    });
 
     socket.on('disconnecting', function () {
         console.log("A client disconnected", socket.id)
     });
 });
+
+/*
+ * https://stackoverflow.com/a/10679620
+ */
+function findAllMatches(data, searchText) {
+    try {
+        const maxSearchResults = 20
+        let results;
+
+        searchText = searchText.toUpperCase();
+        results = data.filter(function (entry) {
+            if (entry &&
+                entry.registrationNumber &&
+                entry.registrationNumber.trim().replace(/ /g, '').toUpperCase().indexOf(searchText) !== -1)
+                return true;
+
+            if (entry &&
+                entry.name &&
+                entry.name.trim().replace(/ /g, '').toUpperCase().indexOf(searchText) !== -1)
+                return true;
+
+            if (entry &&
+                entry.activeIngredient &&
+                entry.activeIngredient.trim().replace(/ /g, '').toUpperCase().indexOf(searchText) !== -1)
+                return true;
+        });
+        results.splice(maxSearchResults, results.length - 1)
+
+        return results;
+    } catch (e) {
+        console.log(e)
+        return;
+    }
+}
+
+function parseMedicineResults(medicineArray) {
+    if (!medicineArray || !medicineArray.length)
+        return;
+
+    // for (let i = 0; i < medicineArray.length; i++) {
+    //     medicineArray[i] =  {
+    //         registrationNumber: getReadableRegistrationNumber(medicineArray[i].registrationNumber),
+    //             name
+    //     :
+    //         medicineInformation.name,
+    //             activeIngredient
+    //     :
+    //         medicineInformation.activeIngredient,
+    //     }
+    // }
+}
 
 function getRegistrationNumber(string) {
     string = string ? string.trim().replace(/ /g, '') : string
