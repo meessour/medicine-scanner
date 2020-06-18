@@ -266,9 +266,6 @@ socketIo.on('connection', (socket) => {
         if (!text) return;
 
         let results = findAllMatches(medicineArray, text)
-        // results = parseMedicineResults(results)
-
-        console.log("search-medicine found!", results.length, "results")
 
         // Send the medicine information back to the client
         socket.emit('search-result', results);

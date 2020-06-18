@@ -238,23 +238,8 @@ async function enableCamera(sourceId = undefined) {
 
             // Show the camera content as soon as metadata is laoded
             videoCanvas.addEventListener("loadedmetadata", callback => {
-                const videoWidth = videoCanvas.videoWidth
-                const videoHeight = videoCanvas.videoHeight
-                const canvasWidth = videoCanvas.offsetWidth
 
-                // Ratio table overview for calculating correct height taking the aspect ratio into account:
-                //
-                //              | Height       | Width       |
-                //  ------------|--------------|-------------|
-                //  VideoCanvas | canvasHeight | canvasWidth |
-                //  VideoStream | videoHeight  | videoWidth  |
-                //  ------------|--------------|-------------|
-                //
-                // In dutch this is called a "kruistabel"
-
-                const canvasHeight = (videoHeight * canvasWidth / videoWidth)
-
-                showCameraCanvas(parseInt(canvasHeight))
+                setCameraCanvas()
                 showHideCameraButton();
             });
 
@@ -342,10 +327,10 @@ function getImageFromBlob(blob) {
  */
 function getBlobScreenshot() {
     // Get a single frame from the mediastream
-    const test = mediaStream.getVideoTracks()[0]
+    const videoTrack = mediaStream.getVideoTracks()[0]
 
-    // Make an imagecapture object in order to get the blob data
-    const imageCapture = new ImageCapture(test);
+    // Make an ImageCapture object in order to get the blob data
+    const imageCapture = new ImageCapture(videoTrack);
 
     // Returns a promise that resolves with blob data from the captured image
     return imageCapture.takePhoto().then(blob => {
@@ -449,8 +434,23 @@ function getMedicineResultsHtml(result) {
     return html;
 }
 
+function setCameraCanvas() {
+    const videoWidth = videoCanvas.videoWidth
+    const videoHeight = videoCanvas.videoHeight
+    const canvasWidth = videoCanvas.offsetWidth
 
-function showCameraCanvas(canvasHeight) {
+    // Ratio table overview for calculating correct height taking the aspect ratio into account:
+    //
+    //              | Height       | Width       |
+    //  ------------|--------------|-------------|
+    //  VideoCanvas | canvasHeight | canvasWidth |
+    //  VideoStream | videoHeight  | videoWidth  |
+    //  ------------|--------------|-------------|
+    //
+    // In dutch this is called a "kruistabel"
+
+    const canvasHeight = (videoHeight * canvasWidth / videoWidth);
+
     videoCanvas.style.maxHeight = `${canvasHeight}px`
     videoCanvas.style.minHeight = `${canvasHeight}px`
 
