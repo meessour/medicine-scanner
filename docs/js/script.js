@@ -195,6 +195,9 @@ async function getUserMediaDevices(deviceId) {
     if (!deviceId)
         await setCameraDevices();
 
+    if (!allCameraSources.length)
+        return {video: true};
+
     sourceId = deviceId ? deviceId : allCameraSources[0];
 
     setLogText(`Camera devices: ${allCameraSources ? allCameraSources.length : 'unknown'}
@@ -233,6 +236,10 @@ async function enableCamera(sourceId = undefined) {
 
     navigator.mediaDevices.getUserMedia(userMediaDevices).then((stream) => {
             console.log("Camera permission was granted")
+
+            // Check if devices are already set
+            if (!allCameraSources.length)
+                setCameraDevices();
 
             mediaStream = stream
 
