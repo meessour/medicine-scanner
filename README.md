@@ -1,6 +1,9 @@
-# Medicijn Scanner
+# Medicine Scanner
 
-This project features a medicine scanner using machine learning. It is able to detect what kind of medicine you are holding using the device's camera.
+This project features a medicine scanner using Optical Character recognition (OCR). It is able to detect what kind of medicine you are holding using the device's camera.
+
+![Scan result](docs/img/readme/scan-result.jpg)
+![Search result](docs/img/readme/search-result.jpg)
 
 ## Demo
 
