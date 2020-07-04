@@ -51,7 +51,7 @@ npm start
 
 **Step 5:** Navigate to: http://localhost:8080/
 
-## Debriefing 
+## Design Rationale
 
 Dit project wordt in opdracht uitgevoerd door bedrijf "Voorhoede" en heb daarbij veel vrijheid binnen een bepaalde scope. Voor dit project is het niet nodig om mij te verdiepen in dit bedrijf. Een bestaande collectie met verschillende medicijnen en de informatie die daar betrekking bij heeft, heb ik tot mijn beschikking. Informatie/data geleverd uit de app is op basis van [deze collectie/API](https://hva-cmd-meesterproef-ai.now.sh/medicines). Hier is een voorbeeld van een medicijn en de relevante informatie in JSON:
 
@@ -66,7 +66,7 @@ Dit project wordt in opdracht uitgevoerd door bedrijf "Voorhoede" en heb daarbij
 
 De opdrachtgever wilt een web app die bedoeld is voor medicijngebruikers, dat is de doelgroep. In deze app kunnen medicijndoosjes gescand worden met de camera van de gebruiker. Aan de hand daarvan lever ik een bijsluiter en andere belangrijke informatie aan de gebruiker op visuele wijze via een informatie-/resultatenpagina. De gebruiker scanned (bijvoorbeeld) het registratienummer en via OCR (Optical Character Recognition) en de app levert dan data op basis van dit nummer. Daarnaast moet frontend van deze site intuïtief en toegankelijk zijn en is bedoeld voor een brede doelgroep. In de app moeten onder andere de homepage, scanner pagina en resultaat pagina aanwezig zijn.
 
-### Onderzoeksvragen
+## Product Biografie
 
 * Hoe kan een medicijngebruiker op basis van een medicijndoosje een bijsluiter en belangrijke informatie vergaren?
     * Wat zou de app moeten kunnen herkennen van een scan?
@@ -101,7 +101,7 @@ Here are a few use cases of a medicine user using the app:
 Here is the interaction diagram of this app:
 ![Interaction Diagram](docs/img/readme/interaction-diagram-meesterproef.png)
 
-## Vakcriteria
+## Reflectie
 
 #### Web App From Scratch
 
