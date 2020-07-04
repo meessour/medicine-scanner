@@ -12,13 +12,14 @@ This project features a medicine scanner using Optical Character recognition (OC
 ## Table of Contents
 
 1. [How to install](#How-to-install)
-2. [Debriefing](#debriefing)
+2. [Design Rationale](#design-rationale)
+3. [Product Biografie](#product-biografie)
     - [Onderzoeksvragen](#onderzoeksvragen)
     - [Scope](#scope)
     - [Planning](#planning)
     - [Use Case](#use-case)
     - [Interaction Diagram](#interaction-diagram)
-3. [Vakcriteria](#Vakcriteria)
+3. [Reflectie](#reflectie)
     - [Web App From Scratch](#Web-App-From-Scratch)
     - [CSS To The Rescue](#CSS-To-The-Rescue)
     - [Progressive Web App](#Progressive-Web-App)
@@ -68,6 +69,8 @@ De opdrachtgever wilt een web app die bedoeld is voor medicijngebruikers, dat is
 
 ## Product Biografie
 
+### Onderzoeksvragen
+
 * Hoe kan een medicijngebruiker op basis van een medicijndoosje een bijsluiter en belangrijke informatie vergaren?
     * Wat zou de app moeten kunnen herkennen van een scan?
     * Wat is een alternatief als de gebruiker geen camera heeft?
@@ -103,7 +106,7 @@ Here is the interaction diagram of this app:
 
 ## Reflectie
 
-#### Web App From Scratch
+### Web App From Scratch
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
@@ -112,28 +115,28 @@ Here is the interaction diagram of this app:
 | De user flow en object / class flow zijn visueel gemaakt | Door middel van een interaction diagram elk proces te visualiseren. | Zo kan iemand die de app nog nooit gebruikt heeft een overzicht krijgen van hoe de app werkt.
 | De interface bevat feedback naar de gebruiker op het moment dat er gewacht moet worden op het laden van data | Door middel van laad animaties en de gebruiker informeren welke taak verwerkt wordt en waar. | De gebruiker informeren over processen is voor meerdere redenen belangrijk, hier volgen een paar voorbeelden. De gebruiker is bereid om langere laadschermen sneller te accepteren/er mee om te gaan. De gebruiker legt meer vertrouwen in de app aangezien hij/zij weet wat er te allen tijde gaande is.
 
-#### CSS To The Rescue
+### CSS To The Rescue
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
 | You try to ignore the cascade, inheritance and specificity | Als een bepaalde styling niet ondersteund wordt in elke browser, kijk ik eerst of het probleem met -webkit opgelost kan worden en anders zorg ik voor een goede fallback. | Niet iedereen wil/is in staat om de meest recente browser te gebruiken, en hier moet rekening mee gehouden worden. Een web app moet door zo veel mogelijk mensen moeten kunnen worden gebruikt, niet alleen voor meer internetverkeer, maar ook om het web als geheel toegankelijk te houden. 
 | Is interactivity enhanced within in given CSS scope? | Door de webpagina op een inclusieve manier te structureren, zorg ik er voor dat de app op meerdere apparaten/situaties correct kan werken. | Ongeveer hetzelfde principe als hierboven, de app kan op deze manier in veel meer verschillende situaties en apparaten werken.
 
-#### Progressive Web App
+### Progressive Web App
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
 | Je snapt het verschil tussen client side en server side renderen en kan server side rendering toepassen voor het tonen van data uit een API. | De app voert de OCR uit op de client om zo de server niet overbelast te laten raken. De server wordt verder alleen gebruikt om de API data te verwerken en READ requests te doen op deze data. | Met deze app maak ik gebruik van Heroku om de server draaiende te houden. Om Heroku niet overbelast te laten raken voer ik de zware OCR logica uit op de client. Op deze manier is de app niet afhankelijk van de hoeveelheid gebruikers op de site.
 | Je snapt het verschil tussen client side en server side renderen en kan server side rendering toepassen voor het tonen van data uit een API. | Het doel van de app is om medicijnen in te laten scannen doormiddel van de camera en deze informatie ter beschikking stellen aan de gebruiker. Stel dat javascript niet werkt of de gebruiker geen camera heeft, is er altijd de optie om handmatig te zoeken naar een specifiek medicijn. | Ongeveer dezelfde principes als bij CSS to the rescue. De app hoort te werken in zo veel mogelijk verschillende situaties en daarvoor moet er een fallback aanwezig zijn.
 
-#### Browser Technologies
+### Browser Technologies
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
 | Student kan de core functionaliteit van een use case doorgronden.<br><br>In de README van het project staat een probleemdefinitie, hoe het probleem is opgelost en een uitleg van de code. | Verschillende scenario’s opstellen in de README en uitleg over de app. | Vooraf oriënteren waarom ik de app maak, voor wie en hoe ik van plan ben het te oriënteren. Daarnaast kan je op deze manier gebreken of nieuwe dingen ontdekken.
 | Student laat zien hoe Progressive Enhancement toe te passen in Web Development. | In deze app pas ik dit toe door fallbacks te implementeren en rekening houden met verschillende (onverwachte) scenario’s. Om te voldoen aan het principe van Progressieve enhancement is de app in de 3 lagen opgebouwd. | Zie CSS tot he rescue en Progressive web app voor een uitgebreidere uitleg. 
 
-#### Real Time Web
+### Real Time Web
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
@@ -141,7 +144,7 @@ Here is the interaction diagram of this app:
 | Complexiteit/ Client-server interactie | De app voert om de twee seconden een OCR scan uit en communiceert daarmee ook de hele tijd met de server. De app is constant processen aan het uitvoeren en te communiceren met de server. | Om zo de best mogelijk ervaring te creëren.
 | Data management | Door middel van sockets, verschillende gebruikers onderscheiden van elkaar en er voor zorgen dat gebruikers geen invloed op elkaar hebben. | Privacy gevoeligheid en onafhankelijkheid. 
 
-#### Web Design
+### Web Design
 
 | Criteria | Hoe het wordt toegepast | Waarom
 | --- | --- | --- |
