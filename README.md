@@ -32,7 +32,7 @@ This project features a medicine scanner using Optical Character recognition (OC
 
 **Step 1:** Clone project:
 ```git
-git clone https://github.com/meessour/meesterproef-1920.git
+git clone https://github.com/meessour/medicine-scanner.git
 ```
 
 **Step 2:** CD to path of the project's root:
